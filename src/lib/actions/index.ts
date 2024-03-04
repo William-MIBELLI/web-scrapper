@@ -8,8 +8,9 @@ export const scrapeAndStore = async (productUrl: string) => {
   }
 
   try {
-    const scappred = scrapeAmazonProduct(productUrl);
-    return scappred;
+    const product = await scrapeAmazonProduct(productUrl);
+    return product;
+
   } catch (error: any) {
     throw new Error(`Something goes wrong : ${error?.message}`)
   }
