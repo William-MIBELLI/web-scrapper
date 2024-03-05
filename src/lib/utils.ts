@@ -1,3 +1,5 @@
+import { PriceHistoryItem } from './../types/index';
+import  Product  from '@/lib/models/product.model';
 import * as cheerio from 'cheerio'
 
 export const extractPrice = (...elements: cheerio.Cheerio<cheerio.Element>[]): string => {
@@ -25,4 +27,24 @@ export const extractPrice = (...elements: cheerio.Cheerio<cheerio.Element>[]): s
 export const extractCurrency = (element: cheerio.Cheerio<cheerio.Element>): string => {
   const currency = element.text().trim().slice(0, 1);
   return currency ? currency : "";
+}
+
+export const getLowestPrice = (priceList: PriceHistoryItem[]): number => {
+  const sortedPrice = priceList.sort((a, b) => {
+    return a.price - b.price
+  });
+  return sortedPrice[0].price;
+}
+
+export const getHighestPrice = (priceList: PriceHistoryItem[], originalPrice: number): number => {
+  const sortedPrice = priceList.sort((a, b) => {
+    return b.price - a.price
+  });
+  return sortedPrice[0].price > originalPrice ? sortedPrice[0].price : originalPrice;
+}
+
+export const getAveragePrice = (priceList: PriceHistoryItem[]): number => {
+  const sumOfPrices = priceList.reduce((acc, curr) => acc + curr.price, 0);
+  const averagePrice = sumOfPrices / priceList.length || 0;
+  return averagePrice;
 }

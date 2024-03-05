@@ -1,7 +1,7 @@
 import axios from "axios";
 import * as cheerio from "cheerio";
 import { extractCurrency, extractPrice } from "../utils";
-import { Product } from "@/types";
+import { IProduct } from "@/interfaces";
 
 export const scrapeAmazonProduct = async (url: string) => {
   if (!url) {
@@ -65,7 +65,7 @@ export const scrapeAmazonProduct = async (url: string) => {
 
     const parsedDiscount = discount ? discount[0] : "";
 
-    const data: Product = {
+    const data: IProduct = {
       url,
       title,
       currentPrice: +currentPrice || +originalPrice,
