@@ -1,9 +1,16 @@
 import axios from "axios";
 import * as cheerio from "cheerio";
-import { extractCurrency, extractPrice, getCategory, getDescription } from "../utils";
+import {
+  extractCurrency,
+  extractPrice,
+  getCategory,
+  getDescription,
+} from "../utils";
 import { IProduct } from "@/interfaces";
 
-export const scrapeAmazonProduct = async (url: string) => {
+export const scrapeAmazonProduct = async (
+  url: string
+): Promise<IProduct | undefined> => {
   if (!url) {
     return;
   }
@@ -49,15 +56,21 @@ export const scrapeAmazonProduct = async (url: string) => {
 
     const description = getDescription(
       $("#productFactsDesktop_feature_div .a-unordered-list .a-list-item"),
-      $('#feature-bullets ul.a-unordered-list li.a-spacing-mini span.a-list-item'),
-      $('div#productDescription p span'),
+      $(
+        "#feature-bullets ul.a-unordered-list li.a-spacing-mini span.a-list-item"
+      ),
+      $("div#productDescription p span")
     );
 
-    const stars = $('.reviewCountTextLinkedHistogram').attr('title')?.split(' ')[0];
-    
-    const reviewsCount = +$('#acrCustomerReviewText').text().trim().replace(/\D/g, '') || 0;
+    const stars =
+      $(".reviewCountTextLinkedHistogram").attr("title")?.split(" ")[0] || "3";
 
-    const category = getCategory($('#wayfinding-breadcrumbs_container a.a-link-normal'));
+    const reviewsCount =
+      +$("#acrCustomerReviewText").text().trim().replace(/\D/g, "") || 0;
+
+    const category = getCategory(
+      $("#wayfinding-breadcrumbs_container a.a-link-normal")
+    );
 
     //TODO : Faire un Array avec les différentes langues it,de,co.uk,es,pt
     const isOutOfStock =
@@ -82,19 +95,19 @@ export const scrapeAmazonProduct = async (url: string) => {
       url,
       title,
       currentPrice: +currentPrice || +originalPrice,
-      originalPrice: +originalPrice || +currentPrice,
+      originalPrice: +originalPrice > +currentPrice ? +originalPrice : +currentPrice,
       isOutOfStock,
       image: imageUrl[0],
       currency: currency || "€",
       discountRate: +parsedDiscount || 0,
       lowestPrice: +currentPrice || +originalPrice,
-      highestPrice: +originalPrice || +currentPrice,
+      highestPrice: +originalPrice > +currentPrice ? +originalPrice : +currentPrice,
       priceHistory: [],
       averagePrice: 0,
       description,
       category,
       reviewsCount,
-      stars: Number(stars) || 0,
+      stars,
     };
     return data;
   } catch (error: any) {

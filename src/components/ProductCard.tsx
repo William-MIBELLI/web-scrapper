@@ -9,6 +9,7 @@ interface IProps {
 const ProductCard: FC<IProps> = ({ product }) => {
 
   const { image, title, category, currency, currentPrice } = product;
+  const categoryToDisplay = category[category.length-1]
 
   return (
     <Link href={`/products/${product._id}`} className='product-card'>
@@ -24,8 +25,8 @@ const ProductCard: FC<IProps> = ({ product }) => {
       <div className='flex flex-col gap-3'>
         <h3 className='product-title border-y border-y-[#E4E4E4] py-4'>{title}</h3>
         <div className='flex justify-between'>
-          <p className='text-black opacity-50 text-lg capitalize'>
-            {category}
+          <p className='text-black text-sm capitalize'>
+            {categoryToDisplay}
           </p>
           <p>
             <span className='text-slate-400 text-lg font-semibold'>{currentPrice/100 }</span>

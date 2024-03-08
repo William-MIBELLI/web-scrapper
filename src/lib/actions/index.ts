@@ -23,6 +23,7 @@ export const scrapeAndStore = async (productUrl: string) => {
     }
 
     let product = scrapped;
+    console.log('product : ', product);
 
     //ON CHECK S'IL EST DEJA DANS LA DATABASE
     const existingProduct = await Product.findOne({
@@ -41,6 +42,8 @@ export const scrapeAndStore = async (productUrl: string) => {
 
     //SINON UN CREE UN NOUVEAU PRODUCT DANS LA DB
     const p = new Product(product);
+    p.priceHistory.push({ price: product.currentPrice, date: Date.now().toString() });
+    p.averagePrice = getAveragePrice(p.priceHistory);
     await p.save();
     return revalidatePath(`/products/${p._id}`);
 
@@ -72,3 +75,17 @@ export const getAllProduct = async () => {
     console.log(error);
   }
 };
+
+export const getProductsByCategory = async (category: string, id: string) => {
+  try {
+    await connectToDb();
+    const products = await Product.find({
+      category: { $in: category },
+      _id: { $ne: id}
+    }).limit(3);
+    products.forEach(p => console.log(p._id));
+    return products;
+  } catch (error) {
+    console.log('error productsbyId : ', error);
+  }
+}

@@ -68,6 +68,10 @@ const productSchema = new mongoose.Schema<IProductModel>(
     isOutOfStock: {
       type: Boolean,
     },
+    stars: {
+      type: String,
+      required: true
+    },
     users: [
       {
         email: {
