@@ -1,6 +1,6 @@
 import axios from "axios";
 import * as cheerio from "cheerio";
-import { extractCurrency, extractPrice } from "../utils";
+import { extractCurrency, extractPrice, getCategory, getDescription } from "../utils";
 import { IProduct } from "@/interfaces";
 
 export const scrapeAmazonProduct = async (url: string) => {
@@ -10,7 +10,7 @@ export const scrapeAmazonProduct = async (url: string) => {
 
   //BRIGHT DATA CONFIGS VALUE
   const username = String(process.env.BRIGHT_DATA_USERNAME);
-  const password = String(process.env.BRIGHT_DATA_PASSWOR);
+  const password = String(process.env.BRIGHT_DATA_PASSWORD);
   const port = 22225;
   const session_id = (1000000 * Math.random()) | 0;
 
@@ -35,7 +35,8 @@ export const scrapeAmazonProduct = async (url: string) => {
     const currentPrice = extractPrice(
       $(".priceToPay"),
       $(".a-button-selected .a-color-base"),
-      $(".a.size.base.a-color-price")
+      $(".a.size.base.a-color-price"),
+      $(".a-offscreen")
     );
 
     const originalPrice = extractPrice(
@@ -45,6 +46,18 @@ export const scrapeAmazonProduct = async (url: string) => {
       $("#priceblock_dealprice"),
       $(".a-size-base.a-color-price")
     );
+
+    const description = getDescription(
+      $("#productFactsDesktop_feature_div .a-unordered-list .a-list-item"),
+      $('#feature-bullets ul.a-unordered-list li.a-spacing-mini span.a-list-item'),
+      $('div#productDescription p span'),
+    );
+
+    const stars = $('.reviewCountTextLinkedHistogram').attr('title')?.split(' ')[0];
+    
+    const reviewsCount = +$('#acrCustomerReviewText').text().trim().replace(/\D/g, '') || 0;
+
+    const category = getCategory($('#wayfinding-breadcrumbs_container a.a-link-normal'));
 
     //TODO : Faire un Array avec les différentes langues it,de,co.uk,es,pt
     const isOutOfStock =
@@ -72,16 +85,16 @@ export const scrapeAmazonProduct = async (url: string) => {
       originalPrice: +originalPrice || +currentPrice,
       isOutOfStock,
       image: imageUrl[0],
-      currency: currency || '€',
+      currency: currency || "€",
       discountRate: +parsedDiscount || 0,
       lowestPrice: +currentPrice || +originalPrice,
       highestPrice: +originalPrice || +currentPrice,
       priceHistory: [],
       averagePrice: 0,
-      description: "",
-      category: "",
-      reviewsCount: 0,
-      stars: 0
+      description,
+      category,
+      reviewsCount,
+      stars: Number(stars) || 0,
     };
     return data;
   } catch (error: any) {

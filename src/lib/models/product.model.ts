@@ -1,82 +1,87 @@
-
 import { IProduct } from "@/interfaces";
 import mongoose, { Document, Model } from "mongoose";
 
-export interface IProductModel extends IProduct, Document{}
+export interface IProductModel extends IProduct, Document {}
 
-const productSchema = new mongoose.Schema<IProductModel>({
-  url: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  currency: {
-    type: String,
-    required: true,
-  },
-  image: {
-    type: String,
-    required: true,
-  },
-  title: {
-    type: String,
-    required: true,
-  },
-  currentPrice: {
-    type: Number,
-    required: true,
-  },
-  originalPrice: {
-    type: Number,
-    required: true,
-  },
-  priceHistory: [
-    {
-      price: {
-        type: Number,
-        required: true,
+const productSchema = new mongoose.Schema<IProductModel>(
+  {
+    url: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    currency: {
+      type: String,
+      required: true,
+    },
+    image: {
+      type: String,
+      required: true,
+    },
+    title: {
+      type: String,
+      required: true,
+    },
+    currentPrice: {
+      type: Number,
+      required: true,
+    },
+    originalPrice: {
+      type: Number,
+      required: true,
+    },
+    priceHistory: [
+      {
+        price: {
+          type: Number,
+          required: true,
+        },
+        date: {
+          type: Date,
+          default: Date.now(),
+        },
       },
-      date: {
-        type: Date,
-        default: Date.now(),
-      },
-    }
-  ],
-  lowestPrice: {
-    type: Number,
-  },
-  highestPrice: {
-    type: Number,
-  },
-  averagePrice: {
-    type: Number,
-  },
-  discountRate: {
-    type: Number
-  },
-  description: {
-    type: String
-  },
-  category: {
-    type: String
-  },
-  reviewsCount: {
-    type: Number
-  },
-  isOutOfStock: {
-    type: Boolean
-  },
-  users: [
-    {
-      email: {
+    ],
+    lowestPrice: {
+      type: Number,
+    },
+    highestPrice: {
+      type: Number,
+    },
+    averagePrice: {
+      type: Number,
+    },
+    discountRate: {
+      type: Number,
+    },
+    description: {
+      type: String,
+    },
+    category: [
+      {
         type: String,
-        required: true
-      }
-    }
-  ],
-}, { timestamps: true});
+      },
+    ],
+    reviewsCount: {
+      type: Number,
+    },
+    isOutOfStock: {
+      type: Boolean,
+    },
+    users: [
+      {
+        email: {
+          type: String,
+          required: true,
+        },
+      },
+    ],
+  },
+  { timestamps: true }
+);
 
-
-const Product: Model<IProductModel> = mongoose.models.Product || mongoose.model<IProductModel>('Product', productSchema);
+const Product: Model<IProductModel> =
+  mongoose.models.Product ||
+  mongoose.model<IProductModel>("Product", productSchema);
 
 export default Product;

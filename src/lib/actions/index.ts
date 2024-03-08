@@ -25,41 +25,25 @@ export const scrapeAndStore = async (productUrl: string) => {
     let product = scrapped;
 
     //ON CHECK S'IL EST DEJA DANS LA DATABASE
-    const existingProduct: IProduct | null = await Product.findOne({
-      url: scrapped.url,
+    const existingProduct = await Product.findOne({
+      $or: [{ url: product.url }, { title: product.title }],
     });
 
-    //ON UPDATE LHISTORIQUE DES PRIX
+    //SI OUI ON UPDATE LHISTORIQUE DES PRIX
     if (existingProduct) {
-      const updatedPriceHistory: IProductModel["priceHistory"] = [
-        ...existingProduct.priceHistory,
-        { price: product.currentPrice, date: Date.now().toString() },
-      ];
-      console.log("UPDATED HISTORY :", updatedPriceHistory);
-      console.log("ORIGINAL HISTORY :", existingProduct.priceHistory);
-      product = {
-        ...scrapped,
-        priceHistory: updatedPriceHistory,
-        lowestPrice: getLowestPrice(updatedPriceHistory),
-        highestPrice: getHighestPrice(
-          updatedPriceHistory,
-          product.originalPrice
-        ),
-        averagePrice: getAveragePrice(updatedPriceHistory),
-      };
+      existingProduct.priceHistory.push({ price: product.currentPrice, date: Date.now().toString() });
+      existingProduct.lowestPrice = getLowestPrice(existingProduct.priceHistory);
+      existingProduct.highestPrice = getHighestPrice(existingProduct.priceHistory, product.currentPrice);
+      existingProduct.averagePrice = getAveragePrice(existingProduct.priceHistory);
+      await existingProduct.save()
+      return revalidatePath(`/products/${existingProduct._id}`);
     }
 
-    //SOIT ON UPDATE SI EXISTANT, SOIT ON CREE UN NOUVEEAU PRODUCT DANS LA DB
-    const newProduct = await Product.findOneAndUpdate(
-      {
-        url: scrapped.url,
-      },
-      product,
-      { upsert: true, new: true }
-    );
+    //SINON UN CREE UN NOUVEAU PRODUCT DANS LA DB
+    const p = new Product(product);
+    await p.save();
+    return revalidatePath(`/products/${p._id}`);
 
-    //ON REVALIDE LA ROUTE POUR RESET LE CACHE ET DISPLAY LES BONNES INFOS
-    revalidatePath(`/products/${newProduct._id}`);
   } catch (error: any) {
     throw new Error(`Something goes wrong : ${error?.message}`);
   }

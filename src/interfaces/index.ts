@@ -1,6 +1,7 @@
 import { PriceHistoryItem, User } from "@/types";
 
 export interface IProduct {
+  _id?: any,
   url: string;
   currency: string;
   image: string;
@@ -13,7 +14,7 @@ export interface IProduct {
   averagePrice: number;
   discountRate: number;
   description: string;
-  category: string;
+  category: string[];
   reviewsCount: number;
   stars: number;
   isOutOfStock: Boolean;

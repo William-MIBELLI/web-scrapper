@@ -1,5 +1,6 @@
 import { getAllProduct } from "@/lib/actions";
 import React from "react";
+import ProductCard from "./ProductCard";
 
 const Trending = async () => {
 
@@ -11,7 +12,7 @@ const Trending = async () => {
       <div className="flex flex-wrap gap-x-8 gap-y-16">
         {
           products && products.map(product => (
-            <div key={product._id}>{product.title}</div>
+            <ProductCard product={product} key={product._id}/>
           ))
         }
       </div>
