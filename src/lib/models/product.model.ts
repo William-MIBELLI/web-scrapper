@@ -76,7 +76,7 @@ const productSchema = new mongoose.Schema<IProductModel>(
       {
         email: {
           type: String,
-          required: true,
+          required: true
         },
       },
     ],

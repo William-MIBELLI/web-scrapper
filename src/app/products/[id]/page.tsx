@@ -161,7 +161,7 @@ const ProductDetails: FC<IProps> = async ({ params: { id } }) => {
               />
             </div>
           </div>
-          <Modal/>
+          <Modal productId={_id.toString()} />
         </div>
       </div>
       {/* PRODUCT DESCRIPTION */}
