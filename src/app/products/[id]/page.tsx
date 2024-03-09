@@ -49,7 +49,7 @@ const ProductDetails: FC<IProps> = async ({ params: { id } }) => {
             alt={title}
             width={580}
             height={400}
-            className="mx-auto"
+            className="mx-auto max-w-full w-auto"
           />
         </div>
         <div className="flex-1 flex flex-col">

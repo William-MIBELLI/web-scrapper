@@ -5,7 +5,7 @@ import Image from "next/image";
 
 const SearchSection = () => {
   return (
-    <section className="px-6 md:px-20 py-24">
+    <section className="px-6 md:px-20 py-20">
       <div className="flex max-lg:flex-col gap-16">
         <div className="flex flex-col justify-center">
           <p className="small-text">

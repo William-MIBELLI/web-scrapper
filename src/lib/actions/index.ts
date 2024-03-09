@@ -25,7 +25,6 @@ export const scrapeAndStore = async (productUrl: string) => {
     }
 
     let product = scrapped;
-    console.log("product : ", product);
 
     //ON CHECK S'IL EST DEJA DANS LA DATABASE
     const existingProduct = await Product.findOne({
@@ -34,21 +33,21 @@ export const scrapeAndStore = async (productUrl: string) => {
 
     //SI OUI ON UPDATE LHISTORIQUE DES PRIX
     if (existingProduct) {
-      existingProduct.priceHistory.push({
-        price: product.currentPrice,
-        date: Date.now().toString(),
-      });
-      existingProduct.lowestPrice = getLowestPrice(
-        existingProduct.priceHistory
-      );
-      existingProduct.highestPrice = getHighestPrice(
-        existingProduct.priceHistory,
-        product.currentPrice
-      );
-      existingProduct.averagePrice = getAveragePrice(
-        existingProduct.priceHistory
-      );
-      await existingProduct.save();
+      // existingProduct.priceHistory.push({
+      //   price: product.currentPrice,
+      //   date: Date.now().toString(),
+      // });
+      // existingProduct.lowestPrice = getLowestPrice(
+      //   existingProduct.priceHistory
+      // );
+      // existingProduct.highestPrice = getHighestPrice(
+      //   existingProduct.priceHistory,
+      //   product.currentPrice
+      // );
+      // existingProduct.averagePrice = getAveragePrice(
+      //   existingProduct.priceHistory
+      // );
+      const p = await updatePriceDataAndSave(existingProduct, product.currentPrice);
       return revalidatePath(`/products/${existingProduct._id}`);
     }
 
@@ -149,3 +148,15 @@ export const modalSubmit = async (
     return { error: err?.message };
   }
 };
+
+export const updatePriceDataAndSave = async (product: IProductModel, newPrice: number) => {
+  product.priceHistory.push({
+    price: newPrice,
+    date: Date.now().toString()
+  })
+  product.lowestPrice = getLowestPrice(product.priceHistory);
+  product.highestPrice = getHighestPrice(product.priceHistory, newPrice);
+  product.averagePrice = getAveragePrice(product.priceHistory);
+
+  return product.save();
+}
