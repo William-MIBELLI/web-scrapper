@@ -8,6 +8,7 @@ import { scrapeAmazonProduct } from "../scraper";
 import { getAveragePrice, getHighestPrice, getLowestPrice } from "../utils";
 import { revalidatePath } from "next/cache";
 import { IModalState } from "@/components/Modal";
+import { generateMailBody, sendEmail } from "../nodemailer";
 
 export const scrapeAndStore = async (productUrl: string) => {
   if (!productUrl) {
@@ -136,6 +137,10 @@ export const modalSubmit = async (
     //SINON ON LE PUSH DANS LE PRODUCT ET ON SAVE
     product.users?.push({ email: email.toString().toLowerCase() });
     await product.save();
+
+    const mailBody = generateMailBody({ title: product.title, url: product.url }, 'WELCOME')
+
+    const m = await sendEmail(mailBody, [email.toString()]);
 
     return { success: true};
 
