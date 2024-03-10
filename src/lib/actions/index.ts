@@ -92,6 +92,23 @@ export const getProductsByCategory = async (category: string, id: string) => {
   }
 };
 
+export const searchProducts = async (key: string) => {
+  console.log('SEARCH PRODUCTS');
+  try {
+    await connectToDb();
+    const products = await Product.find({
+      $or: [
+        { title: { $regex: key, $options: 'i' } },
+        { category: { $regex: key, $options: 'i' } },
+        { description: { $regex: key, $options: 'i'}}
+      ]
+    })
+    return products.map(p => {return {title: p.title, id: p._id.toString()}});
+  } catch (error) {
+    console.log(error)
+  }
+}
+
 export const modalSubmit = async (
   state: IModalState,
   fd: FormData

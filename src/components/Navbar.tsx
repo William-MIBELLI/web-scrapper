@@ -2,14 +2,18 @@ import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import Logo from "public/assets/icons/logo.svg";
+import { Input } from "@nextui-org/react";
+import { useState } from "react";
+import NavBarSearch from "./NavBarSearch";
 
 const navIcons = [
-  { src: '/assets/icons/search.svg', alt:'search'},
   { src: '/assets/icons/black-heart.svg', alt:'black-heart'},
   { src: '/assets/icons/user.svg', alt:'user'},
 ]
 
 const Navbar = () => {
+
+
   return (
     <header className="w-full">
       <nav className="nav">
@@ -21,6 +25,7 @@ const Navbar = () => {
           </p>
         </Link>
         <div className="flex items-center gap-5">
+          <NavBarSearch/>
           {
             navIcons.map(icon => (
               <Image
