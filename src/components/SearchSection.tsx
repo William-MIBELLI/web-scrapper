@@ -2,8 +2,16 @@ import React from "react";
 import HeroCarousel from "@/components/HeroCarousel";
 import Searchbar from "@/components/Searchbar";
 import Image from "next/image";
+import { redirect } from "next/navigation";
 
 const SearchSection = () => {
+  
+
+  const navigate = async (productId: string): Promise<void> => {
+    'use server';
+    redirect(`/products/${productId}`);
+  }
+
   return (
     <section className="px-6 md:px-20 py-20">
       <div className="flex max-lg:flex-col gap-16">
@@ -25,7 +33,7 @@ const SearchSection = () => {
             Powerful, self-serve product and growth analytics to help your
             convert, engage, and retain more.
           </p>
-          <Searchbar />
+          <Searchbar navigate={navigate} />
         </div>
         <HeroCarousel />
       </div>

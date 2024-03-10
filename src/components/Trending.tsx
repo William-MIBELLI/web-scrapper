@@ -2,6 +2,8 @@ import { getAllProduct } from "@/lib/actions";
 import React from "react";
 import ProductCard from "./ProductCard";
 
+export const revalidate = 0;
+
 const Trending = async () => {
 
   const products = await getAllProduct();

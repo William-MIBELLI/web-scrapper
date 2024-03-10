@@ -17,6 +17,7 @@ export const extractPrice = (
 
       if (price) {
         const parsedPrice = price.replace(/\D/g, "");
+        //console.log('price :',price)
         priceToReturn = parsedPrice;
         return false;
       }

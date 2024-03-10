@@ -10,7 +10,7 @@ import { revalidatePath } from "next/cache";
 import { IModalState } from "@/components/Modal";
 import { generateMailBody, sendEmail } from "../nodemailer";
 
-export const scrapeAndStore = async (productUrl: string) => {
+export const scrapeAndStore = async (productUrl: string): Promise<string | void> => {
   if (!productUrl) {
     return;
   }
@@ -21,6 +21,7 @@ export const scrapeAndStore = async (productUrl: string) => {
     //ON SCRAPPE DEPUIS AMAZON
     const scrapped = await scrapeAmazonProduct(productUrl);
     if (!scrapped) {
+      console.log('PAS DE SRCAPPED');
       return;
     }
 
@@ -33,22 +34,9 @@ export const scrapeAndStore = async (productUrl: string) => {
 
     //SI OUI ON UPDATE LHISTORIQUE DES PRIX
     if (existingProduct) {
-      // existingProduct.priceHistory.push({
-      //   price: product.currentPrice,
-      //   date: Date.now().toString(),
-      // });
-      // existingProduct.lowestPrice = getLowestPrice(
-      //   existingProduct.priceHistory
-      // );
-      // existingProduct.highestPrice = getHighestPrice(
-      //   existingProduct.priceHistory,
-      //   product.currentPrice
-      // );
-      // existingProduct.averagePrice = getAveragePrice(
-      //   existingProduct.priceHistory
-      // );
       const p = await updatePriceDataAndSave(existingProduct, product.currentPrice);
-      return revalidatePath(`/products/${existingProduct._id}`);
+      revalidatePath(`/products/${existingProduct._id}`);
+      return p._id.toString()
     }
 
     //SINON UN CREE UN NOUVEAU PRODUCT DANS LA DB
@@ -59,7 +47,8 @@ export const scrapeAndStore = async (productUrl: string) => {
     });
     p.averagePrice = getAveragePrice(p.priceHistory);
     await p.save();
-    return revalidatePath(`/products/${p._id}`);
+    revalidatePath(`/products/${p._id}`);
+    return p._id.toString();
   } catch (error: any) {
     throw new Error(`Something goes wrong : ${error?.message}`);
   }
@@ -110,7 +99,7 @@ export const modalSubmit = async (
   const email = fd.get("email");
   const productId = fd.get("productId");
 
-  const r = await new Promise(reesolve => setTimeout(reesolve, 2500));
+  //const r = await new Promise(reesolve => setTimeout(reesolve, 2500));
 
   if (!email || !email.toString().match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g)) {
     return { ...state, error: "Please providee a valid address." };

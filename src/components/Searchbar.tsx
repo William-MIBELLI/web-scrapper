@@ -1,7 +1,8 @@
 "use client";
 
 import { scrapeAndStore } from "@/lib/actions";
-import React, { ChangeEvent, FormEvent, useState } from "react";
+import { redirect } from "next/navigation";
+import React, { ChangeEvent, FC, FormEvent, useState } from "react";
 
 const isValidAmazonUrl = (url: string): boolean => {
   try {
@@ -18,7 +19,11 @@ const isValidAmazonUrl = (url: string): boolean => {
   return false;
 };
 
-const Searchbar = () => {
+interface IProps {
+  navigate: (arg: string) => void
+}
+
+const Searchbar: FC<IProps> = ({ navigate }) => {
   const [searchPrompt, setSearchPrompt] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -32,9 +37,12 @@ const Searchbar = () => {
 
     try {
       setIsLoading(true);
-      const product = await scrapeAndStore(searchPrompt);
+      const productId = await scrapeAndStore(searchPrompt);
+      if (productId) {
+        navigate(productId);
+      }
     } catch (error) {
-      
+      console.log('error : ', error);
     } finally {
       setIsLoading(false);
     }

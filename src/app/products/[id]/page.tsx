@@ -15,6 +15,8 @@ interface IProps {
 const ProductDetails: FC<IProps> = async ({ params: { id } }) => {
   const product = await getProductById(id);
 
+  //const o = await new Promise(resolve => setTimeout(resolve, 400000));
+
   if (!product) {
     return redirect("/");
   }
@@ -147,7 +149,7 @@ const ProductDetails: FC<IProps> = async ({ params: { id } }) => {
               <PriceInfoCard
                 title="Average"
                 iconSrc="/assets/icons/chart.svg"
-                value={`${currency}${averagePrice / 100}`}
+                value={`${currency}${(averagePrice / 100).toFixed(2)}`}
               />
               <PriceInfoCard
                 title="Highest Price"
@@ -170,7 +172,7 @@ const ProductDetails: FC<IProps> = async ({ params: { id } }) => {
         <div className="flex flex-col gap-4">
           {description.split('\n')}
         </div>
-        <Link href={'/'} className="text-base text-white">
+        <Link href={product.url} target="_blank" className="text-base text-white">
           <button className="btn w-fit mx-auto flex items-center justify-center gap-3 min-w-[200px]" type="button">
             <Image
               src="/assets/icons/bag.svg"
